@@ -21,14 +21,14 @@ BIN_PATH = f"build/{BASENAME}.bin"
 MAP_PATH = f"build/{BASENAME}.map"
 ELF_PATH = f"build/{BASENAME}.elf"
 
-COMMON_INCLUDES = ""
+COMMON_INCLUDES = f"{ROOT}/include"
 
 GAME_CC_DIR = f"{TOOLS_DIR}/cc/spu"
 COMMON_COMPILE_FLAGS = "-O2"
 
-GAME_GCC_CMD = f"{GAME_CC_DIR}/bin/gcc.exe -c -B {GAME_CC_DIR}/bin {COMMON_INCLUDES} {COMMON_COMPILE_FLAGS} $in"
+GAME_GCC_CMD = f"{GAME_CC_DIR}/bin/gcc.exe -c -B {GAME_CC_DIR}/bin -I {COMMON_INCLUDES} {COMMON_COMPILE_FLAGS} $in"
 
-GAME_COMPILE_CMD = f"{GAME_GCC_CMD} -S -o - | {GAME_CC_DIR}/bin/as.exe {COMMON_COMPILE_FLAGS}"
+GAME_COMPILE_CMD = f"{GAME_GCC_CMD} -S -o /dev/stdout | {GAME_CC_DIR}/bin/as.exe"
 
 def clean():
     shutil.rmtree("asm", ignore_errors=True)
@@ -65,7 +65,7 @@ def build_stuff():
     ninja.rule(
         "as",
         description="as $in",
-        command=f"cpp {COMMON_INCLUDES} $in -o  - | {cross}as.exe -Iinclude -o $out",
+        command=f"cpp $in -o - | {cross}as.exe -Iinclude -o $out",
     )
 
     ninja.rule(
