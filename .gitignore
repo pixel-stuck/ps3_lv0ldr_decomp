@@ -1,0 +1,10 @@
+__pycache__/
+asm/
+assets/
+build/
+tools/cc
+
+*.bin
+.ninja_log
+build.ninja
+lv0ldr.ld
