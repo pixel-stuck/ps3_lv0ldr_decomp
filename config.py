@@ -40,11 +40,12 @@ def generate_linker(linker_path):
 
     f = open(linker_path, "w")
     f.write("SECTIONS\n{\n")
+    f.write(f"\t. = 0x{BuildFiles[0].address:x};\n")
 
     for section, paths in sections.items():
-        f.write(f"\t{section} : SUBALIGN(8)\n\t{{\n")
+        f.write(f"\t{section} BLOCK(0x10) : SUBALIGN(8)\n\t{{\n")
         for path in paths:
-            f.write(f"\t\t{path}({section}*);\n")
+            f.write(f"\t\t{path}({section});\n")
         f.write("\t}\n\n")
 
     f.write("\t/DISCARD/ :\n")
@@ -53,18 +54,19 @@ def generate_linker(linker_path):
 BuildFiles = [
     HandAsm("entrypoint", 0x400, "asm/400.s"),
     Clang("488", 0x488, "src/488.c"),
-    Asm("func_4f8", 0x4f8, "asm/nonmatching/func_4f8.s"),
-    Asm("func_580", 0x580, "asm/nonmatching/func_580.s"),
+    Clang("4f8", 0x4f8, "src/4f8.c"),
+    Clang("510", 0x510, "src/510.c"),
+    Clang("580", 0x580, "src/580.c"),
     Asm("func_678", 0x678, "asm/nonmatching/func_678.s"),
     Asm("func_730", 0x730, "asm/nonmatching/func_730.s"),
     Asm("func_780", 0x780, "asm/nonmatching/func_780.s"),
     Asm("func_808", 0x808, "asm/nonmatching/func_808.s"),
     Asm("func_970", 0x970, "asm/nonmatching/func_970.s"),
     Asm("func_a18", 0xa18, "asm/nonmatching/func_a18.s"),
-    Asm("func_c68", 0xc68, "asm/nonmatching/func_c68.s"),
-    Asm("func_cf0", 0xcf0, "asm/nonmatching/func_cf0.s"),
-    Asm("func_e38", 0xe38, "asm/nonmatching/func_e38.s"),
-    Asm("func_e40", 0xe40, "asm/nonmatching/func_e40.s"),
+    Clang("c68", 0xc68, "src/c68.c"),
+    Clang("cf0", 0xcf0, "src/cf0.c"),
+    Clang("e38", 0xe38, "src/e38.c"),
+    Clang("e40", 0xe40, "src/e40.c"),
     Asm("func_f28", 0xf28, "asm/nonmatching/func_f28.s"),
     Asm("func_fa0", 0xfa0, "asm/nonmatching/func_fa0.s"),
     Asm("func_fd8", 0xfd8, "asm/nonmatching/func_fd8.s"),
@@ -73,7 +75,7 @@ BuildFiles = [
     Asm("func_1028", 0x1028, "asm/nonmatching/func_1028.s"),
     Asm("func_1040", 0x1040, "asm/nonmatching/func_1040.s"),
     Asm("func_10b0", 0x10b0, "asm/nonmatching/func_10b0.s"),
-    Asm("func_1120", 0x1120, "asm/nonmatching/func_1120.s"),
+    Clang("1120", 0x1120, "src/1120.c"),
     Asm("func_1170", 0x1170, "asm/nonmatching/func_1170.s"),
     Asm("func_1188", 0x1188, "asm/nonmatching/func_1188.s"),
     Asm("func_1480", 0x1480, "asm/nonmatching/func_1480.s"),
@@ -297,13 +299,13 @@ BuildFiles = [
     Asm("func_ec08", 0xec08, "asm/nonmatching/func_ec08.s"),
     Asm("func_eca8", 0xeca8, "asm/nonmatching/func_eca8.s"),
     Asm("func_f180", 0xf180, "asm/nonmatching/func_f180.s"),
-    Asm("func_f210", 0xf210, "asm/nonmatching/func_f210.s"),
-    Asm("func_f280", 0xf280, "asm/nonmatching/func_f280.s"),
-    Asm("func_f2a8", 0xf2a8, "asm/nonmatching/func_f2a8.s"),
-    Asm("func_f348", 0xf348, "asm/nonmatching/func_f348.s"),
-    Asm("func_f3b8", 0xf3b8, "asm/nonmatching/func_f3b8.s"),
+    Clang("f210", 0xf210, "src/f210.c"),
+    Clang("f280", 0xf280, "src/f280.c"),
+    Clang("f2a8", 0xf2a8, "src/f2a8.c"),
+    Clang("f348", 0xf348, "src/f348.c"),
+    Clang("f3b8", 0xf3b8, "src/f3b8.c"),
     Asm("func_f3e0", 0xf3e0, "asm/nonmatching/func_f3e0.s"),
-    Asm("func_f590", 0xf590, "asm/nonmatching/func_f590.s"),
+    Clang("f590", 0xf590, "src/f590.c"),
     Asm("func_f620", 0xf620, "asm/nonmatching/func_f620.s"),
     Asm("func_f668", 0xf668, "asm/nonmatching/func_f668.s"),
     Asm("func_f6b0", 0xf6b0, "asm/nonmatching/func_f6b0.s"),

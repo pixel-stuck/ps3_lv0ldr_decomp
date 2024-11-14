@@ -77,6 +77,8 @@ func_4f8:
 	shufb	$2,$4,$6,$5
 	stqd	$2,0($3)
 	bi	$0
+.global func_510
+func_510:
 	ila	$4,152320	# 25300
 	stqd	$80,-16($1)
 	ori	$80,$3,0
