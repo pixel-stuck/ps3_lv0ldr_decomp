@@ -236,3 +236,4 @@ data_226d0 = 0x226d0;
 data_226f0 = 0x226f0;
 data_22710 = 0x22710;
 data_22740 = 0x22740;
+stack_bottom = 0x3dfa0;

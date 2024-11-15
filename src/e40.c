@@ -1,14 +1,4 @@
-#include "obj1.h"
-
-void func_10050(void);
-int func_ff8(obj1*);
-void func_d7d8();
-int func_fc60(obj1*);
-int func_cf0(obj1*, int*);
-int func_d808(void);
-void func_d5d8(void);
-void func_d8a0(void);
-void func_d550(void);
+#include "funcs.h"
 
 int func_e40(obj1* this) {
     int res;

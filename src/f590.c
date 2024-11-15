@@ -1,20 +1,12 @@
 #include "include_asm.h"
-
-
-int func_e0b8(void);
-void func_e430(int*);
-void func_eb98(int, int);
-void func_18038(void);
-void func_18560(void);
-void __attribute__((noreturn)) func_1da98(int, char*, ...);
-void func_1df60(int*, int);
+#include "funcs.h"
 
 extern int data_259c0;
 extern char data_26440[];
 extern int data_25140;
 
 #ifdef NON_MATCHING
-void func_f590(int* arg0, char arg1, int arg2) {
+void func_f590(obj1* arg0, char arg1, int arg2) {
     int temp;
     func_e430(arg0);
 

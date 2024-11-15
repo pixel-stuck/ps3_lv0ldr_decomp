@@ -1,5 +1,5 @@
 #include "include_asm.h"
-int func_f2a8(int);
+#include "funcs.h"
 
 // TODO: migrate rodata
 #ifdef NON_MATCHING

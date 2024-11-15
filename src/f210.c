@@ -1,6 +1,6 @@
-int func_f180(void);
+#include "funcs.h"
 
-unsigned char func_f210(void) {
+unsigned char func_f210() {
     unsigned char ret;
     if (func_f180() == 0x100) {
         ret = 1;

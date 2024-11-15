@@ -1,3 +1,5 @@
+#include "funcs.h"
+
 typedef struct IfiHeader {
     /* 0x00 */ int magic;
     /* 0x04 */ int version_major;
@@ -12,13 +14,9 @@ extern char data_25070[];
 
 extern IfiHeader data_31ed0;
 
-unsigned char func_f210(void);
-void func_1ddc8(char*, ...);
-void __attribute__((noreturn)) func_1da98(int, char*, ...);
-
 #define MAGIC(a, b, c, d) (a << 24 | b << 16 | c << 8 | d)
 
-int func_f2a8(void) {
+int func_f2a8(int arg0) {
     if(func_f210() != 0) {
         if(data_31ed0.magic == MAGIC('I', 'F', 'I', '\0')) {
             if((data_31ed0.version_major == 1) && (data_31ed0.version_minor == 2)) {

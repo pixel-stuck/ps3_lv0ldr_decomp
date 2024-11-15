@@ -1,7 +1,5 @@
 #include "include_asm.h"
-
-void func_1ced0(void);
-int func_1c070(void);
+#include "funcs.h"
 
 // stubborn andi on the return value
 #ifdef NON_MATCHING

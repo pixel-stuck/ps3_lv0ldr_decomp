@@ -1,5 +1,4 @@
-void func_d938(int, int*);
-
+#include "funcs.h"
 extern int data_25300;
 extern int data_226d0;
 extern int data_226f0;
