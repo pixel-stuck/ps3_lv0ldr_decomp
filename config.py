@@ -45,7 +45,8 @@ def generate_linker(linker_path):
     for section, paths in sections.items():
         f.write(f"\t{section} BLOCK(0x10) : SUBALIGN(8)\n\t{{\n")
         for path in paths:
-            f.write(f"\t\t{path}({section});\n")
+            f.write(f"\t\t{path}({section}.* {section});\n")
+
         f.write("\t}\n\n")
 
     f.write("\t/DISCARD/ :\n")
@@ -54,30 +55,7 @@ def generate_linker(linker_path):
 BuildFiles = [
     HandAsm("entrypoint", 0x400, "asm/400.s"),
     Clang("488", 0x488, "src/488.c"),
-    Clang("4f8", 0x4f8, "src/4f8.c"),
-    Clang("510", 0x510, "src/510.c"),
-    Clang("580", 0x580, "src/580.c"),
-    Asm("func_678", 0x678, "asm/nonmatching/func_678.s"),
-    Asm("func_730", 0x730, "asm/nonmatching/func_730.s"),
-    Asm("func_780", 0x780, "asm/nonmatching/func_780.s"),
-    Asm("func_808", 0x808, "asm/nonmatching/func_808.s"),
-    Asm("func_970", 0x970, "asm/nonmatching/func_970.s"),
-    Asm("func_a18", 0xa18, "asm/nonmatching/func_a18.s"),
-    Clang("c68", 0xc68, "src/c68.c"),
-    Clang("cf0", 0xcf0, "src/cf0.c"),
-    Clang("e38", 0xe38, "src/e38.c"),
-    Clang("e40", 0xe40, "src/e40.c"),
-    Asm("func_f28", 0xf28, "asm/nonmatching/func_f28.s"),
-    Asm("func_fa0", 0xfa0, "asm/nonmatching/func_fa0.s"),
-    Asm("func_fd8", 0xfd8, "asm/nonmatching/func_fd8.s"),
-    Asm("func_fe8", 0xfe8, "asm/nonmatching/func_fe8.s"),
-    Asm("func_ff8", 0xff8, "asm/nonmatching/func_ff8.s"),
-    Asm("func_1028", 0x1028, "asm/nonmatching/func_1028.s"),
-    Asm("func_1040", 0x1040, "asm/nonmatching/func_1040.s"),
-    Asm("func_10b0", 0x10b0, "asm/nonmatching/func_10b0.s"),
-    Clang("1120", 0x1120, "src/1120.c"),
-    Asm("func_1170", 0x1170, "asm/nonmatching/func_1170.s"),
-    Asm("func_1188", 0x1188, "asm/nonmatching/func_1188.s"),
+    # new TU ?
     Asm("func_1480", 0x1480, "asm/nonmatching/func_1480.s"),
     Asm("func_1560", 0x1560, "asm/nonmatching/func_1560.s"),
     Asm("func_15a8", 0x15a8, "asm/nonmatching/func_15a8.s"),
@@ -260,6 +238,7 @@ BuildFiles = [
     Asm("func_d778", 0xd778, "asm/nonmatching/func_d778.s"),
     Asm("func_d7a8", 0xd7a8, "asm/nonmatching/func_d7a8.s"),
     Asm("func_d7d8", 0xd7d8, "asm/nonmatching/func_d7d8.s"),
+    # new TU ?
     Asm("func_d808", 0xd808, "asm/nonmatching/func_d808.s"),
     Asm("func_d8a0", 0xd8a0, "asm/nonmatching/func_d8a0.s"),
     Asm("func_d938", 0xd938, "asm/nonmatching/func_d938.s"),
@@ -313,6 +292,7 @@ BuildFiles = [
     Asm("func_10050", 0x10050, "asm/nonmatching/func_10050.s"),
     Asm("func_10360", 0x10360, "asm/nonmatching/func_10360.s"),
     Asm("func_10368", 0x10368, "asm/nonmatching/func_10368.s"),
+    # new TU ?
     Asm("func_104b0", 0x104b0, "asm/nonmatching/func_104b0.s"),
     Asm("func_10608", 0x10608, "asm/nonmatching/func_10608.s"),
     Asm("func_10710", 0x10710, "asm/nonmatching/func_10710.s"),
@@ -322,6 +302,7 @@ BuildFiles = [
     Asm("func_10830", 0x10830, "asm/nonmatching/func_10830.s"),
     Asm("func_10858", 0x10858, "asm/nonmatching/func_10858.s"),
     Asm("func_108f8", 0x108f8, "asm/nonmatching/func_108f8.s"),
+    # new TU?
     Asm("func_10f38", 0x10f38, "asm/nonmatching/func_10f38.s"),
     Asm("func_10fb8", 0x10fb8, "asm/nonmatching/func_10fb8.s"),
     Asm("func_110c8", 0x110c8, "asm/nonmatching/func_110c8.s"),
@@ -358,12 +339,14 @@ BuildFiles = [
     Asm("func_14620", 0x14620, "asm/nonmatching/func_14620.s"),
     Asm("func_14880", 0x14880, "asm/nonmatching/func_14880.s"),
     Asm("func_14940", 0x14940, "asm/nonmatching/func_14940.s"),
+    # new TU ?
     Asm("func_15108", 0x15108, "asm/nonmatching/func_15108.s"),
     Asm("func_151d8", 0x151d8, "asm/nonmatching/func_151d8.s"),
     Asm("func_15e40", 0x15e40, "asm/nonmatching/func_15e40.s"),
     Asm("func_162c8", 0x162c8, "asm/nonmatching/func_162c8.s"),
     Asm("func_16538", 0x16538, "asm/nonmatching/func_16538.s"),
     Asm("func_165c8", 0x165c8, "asm/nonmatching/func_165c8.s"),
+    # new TU?
     Asm("func_16660", 0x16660, "asm/nonmatching/func_16660.s"),
     Asm("func_16cb8", 0x16cb8, "asm/nonmatching/func_16cb8.s"),
     Asm("func_16df8", 0x16df8, "asm/nonmatching/func_16df8.s"),
@@ -386,6 +369,7 @@ BuildFiles = [
     Asm("func_184d0", 0x184d0, "asm/nonmatching/func_184d0.s"),
     Asm("func_18550", 0x18550, "asm/nonmatching/func_18550.s"),
     Asm("func_18560", 0x18560, "asm/nonmatching/func_18560.s"),
+    # new TU?
     Asm("func_18608", 0x18608, "asm/nonmatching/func_18608.s"),
     Asm("func_18738", 0x18738, "asm/nonmatching/func_18738.s"),
     Asm("func_188f0", 0x188f0, "asm/nonmatching/func_188f0.s"),
@@ -422,6 +406,7 @@ BuildFiles = [
     Asm("func_1a398", 0x1a398, "asm/nonmatching/func_1a398.s"),
     Asm("func_1a3e0", 0x1a3e0, "asm/nonmatching/func_1a3e0.s"),
     Asm("func_1a430", 0x1a430, "asm/nonmatching/func_1a430.s"),
+    # new TU?
     Asm("func_1a4a8", 0x1a4a8, "asm/nonmatching/func_1a4a8.s"),
     Asm("func_1a540", 0x1a540, "asm/nonmatching/func_1a540.s"),
     Asm("func_1a5a8", 0x1a5a8, "asm/nonmatching/func_1a5a8.s"),
@@ -437,11 +422,13 @@ BuildFiles = [
     Asm("func_1aad8", 0x1aad8, "asm/nonmatching/func_1aad8.s"),
     Asm("func_1ab30", 0x1ab30, "asm/nonmatching/func_1ab30.s"),
     Asm("func_1ab80", 0x1ab80, "asm/nonmatching/func_1ab80.s"),
+    # new TU?
     Asm("func_1abe0", 0x1abe0, "asm/nonmatching/func_1abe0.s"),
     Asm("func_1ac98", 0x1ac98, "asm/nonmatching/func_1ac98.s"),
     Asm("func_1af08", 0x1af08, "asm/nonmatching/func_1af08.s"),
     Asm("func_1af28", 0x1af28, "asm/nonmatching/func_1af28.s"),
     Asm("func_1af90", 0x1af90, "asm/nonmatching/func_1af90.s"),
+    # new TU?
     Asm("func_1b018", 0x1b018, "asm/nonmatching/func_1b018.s"),
     Asm("func_1b0c0", 0x1b0c0, "asm/nonmatching/func_1b0c0.s"),
     Asm("func_1b148", 0x1b148, "asm/nonmatching/func_1b148.s"),
@@ -449,6 +436,7 @@ BuildFiles = [
     Asm("func_1b4c0", 0x1b4c0, "asm/nonmatching/func_1b4c0.s"),
     Asm("func_1b610", 0x1b610, "asm/nonmatching/func_1b610.s"),
     Asm("func_1b7c8", 0x1b7c8, "asm/nonmatching/func_1b7c8.s"),
+    # new TU?
     Asm("func_1b850", 0x1b850, "asm/nonmatching/func_1b850.s"),
     Asm("func_1ba08", 0x1ba08, "asm/nonmatching/func_1ba08.s"),
     Asm("func_1ba90", 0x1ba90, "asm/nonmatching/func_1ba90.s"),
@@ -467,6 +455,7 @@ BuildFiles = [
     Asm("func_1c280", 0x1c280, "asm/nonmatching/func_1c280.s"),
     Asm("func_1c2a0", 0x1c2a0, "asm/nonmatching/func_1c2a0.s"),
     Asm("func_1c318", 0x1c318, "asm/nonmatching/func_1c318.s"),
+    # new TU?
     Asm("func_1c388", 0x1c388, "asm/nonmatching/func_1c388.s"),
     Asm("func_1c708", 0x1c708, "asm/nonmatching/func_1c708.s"),
     Asm("func_1c728", 0x1c728, "asm/nonmatching/func_1c728.s"),
@@ -505,5 +494,20 @@ BuildFiles = [
     Asm("func_205b0", 0x205b0, "asm/nonmatching/func_205b0.s"),
     Asm("func_21148", 0x21148, "asm/nonmatching/func_21148.s"),
     Asm("func_21c00", 0x21c00, "asm/nonmatching/func_21c00.s"),
-    Bin("data",  0x226c0, "assets/data.bin")
+    Bin("data_226d0", 0x226d0, "assets/data/226d0.bin"),
+    Bin("data_228d0", 0x228d0, "assets/data/228d0.bin"),
+    Bin("data_24d80", 0x24d80, "assets/data/24d80.bin"),
+    Bin("data_25c30", 0x25c30, "assets/data/25c30.bin"),
+    Bin("data_25f80", 0x25f80, "assets/data/25f80.bin"),
+    Bin("data_260c0", 0x260c0, "assets/data/260c0.bin"),
+    Bin("data_265d0", 0x265d0, "assets/data/265d0.bin"),
+    Bin("data_26630", 0x26630, "assets/data/26630.bin"),
+    Bin("data_26b70", 0x26b70, "assets/data/26b70.bin"),
+    Bin("data_26d90", 0x26d90, "assets/data/26d90.bin"),
+    Bin("data_27040", 0x27040, "assets/data/27040.bin"),
+    Bin("data_27190", 0x27190, "assets/data/27190.bin"),
+    Bin("data_271e0", 0x271e0, "assets/data/271e0.bin"),
+    Bin("data_27360", 0x27360, "assets/data/27360.bin"),
+    # perhaps .data is here? The function reference order resets around here
+    Bin("data_27a00", 0x27a00, "assets/data/27a00.bin"),
 ]

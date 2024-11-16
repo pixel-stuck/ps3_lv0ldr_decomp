@@ -14,7 +14,7 @@ typedef struct {
 } obj1_vtable; // size = 0x1C
 
 typedef struct obj1 {
-    /* 0x00 */ obj1_vtable* vtable;
+    /* 0x00 */ const obj1_vtable* vtable;
 } obj1; // size = ??
 
 #endif

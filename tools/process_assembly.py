@@ -1,7 +1,7 @@
 import re
 
 f_in = open("disassembly.txt", "r")
-f_out = open("disassembly_fixed.s", "w")
+f_out = open("disassembly_new_fixed.s", "w")
 f_undef = open("undefined_syms.ld", "w")
 
 addr_set = set()
@@ -50,6 +50,8 @@ for line in f_in:
         re.sub(r"0x[a-fA-F0-9]*", addr_add, line)
     elif 'lqr' in line or 'stqr' in line:
         re.sub(r"0x[a-fA-F0-9]*", data_addr_add, line)
+    elif 'ila' in line:
+        print("0x"+line.split("#")[1][1:], end='')
 
 f_in.seek(0)
 
