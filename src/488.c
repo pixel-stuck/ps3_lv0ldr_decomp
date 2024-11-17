@@ -46,8 +46,7 @@ void __attribute__((naked)) func_580(void) {
 }
 
 
-void __attribute__((naked)) func_678(void) {
-
+int __attribute__((naked)) func_678(int arg0, int arg1, int arg2) {
     INCLUDE_ASM("asm/nonmatching", func_678);
 }
 
@@ -123,12 +122,28 @@ int func_e40(obj1* this) {
     return res;
 }
 
-void __attribute__((naked)) func_f28(void) {
-    INCLUDE_ASM("asm/nonmatching", func_f28);
+int func_f28(int arg0, int arg1, int arg2) {
+    if(func_f2a8(arg0) <= 0) {
+        return func_678(arg0, arg1, arg2);
+    }
+
+    return -1;
 }
 
-void __attribute__((naked)) func_fa0(void) {
-    INCLUDE_ASM("asm/nonmatching", func_fa0);
+extern int data_2f9b0;
+
+void func_fa0(int arg0, int arg1) {
+    if(arg0 == 1) {
+        if(arg1 == 0xFFFF) {
+            func_26b8(&data_2f9b0);
+        }
+    } else if(arg0 == 0) {
+        if(arg1 == 0xFFFF) {
+            func_2818(&data_2f9b0);
+        }
+    }
+
+    return;
 }
 
 void __attribute__((naked)) func_fd8(void) {

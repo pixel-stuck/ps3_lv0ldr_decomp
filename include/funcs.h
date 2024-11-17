@@ -15,6 +15,9 @@ int func_ff8(obj1*);
 void func_1028(obj1*);
 void func_1120(obj1*);
 
+void func_26b8(int*);
+void func_2818(int*);
+
 void func_d938(obj1*, char*);
 void func_f590(obj1* arg0, int arg1, int arg2);
 void func_10050(void);
