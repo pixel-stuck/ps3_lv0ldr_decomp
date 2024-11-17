@@ -494,7 +494,7 @@ BuildFiles = [
     Asm("func_205b0", 0x205b0, "asm/nonmatching/func_205b0.s"),
     Asm("func_21148", 0x21148, "asm/nonmatching/func_21148.s"),
     Asm("func_21c00", 0x21c00, "asm/nonmatching/func_21c00.s"),
-    Bin("data_226d0", 0x226d0, "assets/data/226d0.bin"),
+    # Bin("data_226d0", 0x226d0, "assets/data/226d0.bin"),
     Bin("data_228d0", 0x228d0, "assets/data/228d0.bin"),
     Bin("data_24d80", 0x24d80, "assets/data/24d80.bin"),
     Bin("data_25c30", 0x25c30, "assets/data/25c30.bin"),

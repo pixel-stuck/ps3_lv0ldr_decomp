@@ -26,7 +26,7 @@ COMMON_INCLUDES = f"{ROOT}/include"
 GAME_CC_DIR = f"{TOOLS_DIR}/cc/spu"
 COMMON_COMPILE_FLAGS = "-Os"
 
-GAME_GCC_CMD = f"{GAME_CC_DIR}/bin/gcc.exe -fno-reorder-functions  -c -B {GAME_CC_DIR}/bin -I {COMMON_INCLUDES} {COMMON_COMPILE_FLAGS} $in"
+GAME_GCC_CMD = f"{GAME_CC_DIR}/bin/gcc.exe -fno-unit-at-a-time -c -B {GAME_CC_DIR}/bin -I {COMMON_INCLUDES} {COMMON_COMPILE_FLAGS} $in"
 
 GAME_COMPILE_CMD = f"{GAME_GCC_CMD} -o"
 

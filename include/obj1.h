@@ -11,10 +11,15 @@ typedef struct {
     /* 0x10 */ int (*func4)(struct obj1*, int);
     /* 0x14 */ void (*func5)(struct obj1*);
     /* 0x18 */ void (*func6)(struct obj1*);
-} obj1_vtable; // size = 0x1C
+} obj1_vtable_inner; // size = 0x1C
+
+typedef struct {
+    /* 0x00 */ char unk0[8];
+    obj1_vtable_inner inner;
+} obj1_vtable;
 
 typedef struct obj1 {
-    /* 0x00 */ const obj1_vtable* vtable;
+    /* 0x00 */ const obj1_vtable_inner* vtable;
 } obj1; // size = ??
 
 #endif
