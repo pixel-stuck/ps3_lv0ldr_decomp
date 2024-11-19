@@ -239,3 +239,6 @@ data_25070 = 0x25070;
 stack_bottom = 0x3dfa0;
 data_22790 = 0x22790;
 data_2f9b0 = 0x2f9b0;
+data_27a10 = 0x27a10;
+data_22af8 = 0x22af8;
+data_22ad8 = 0x22ad8;

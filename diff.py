@@ -1845,7 +1845,7 @@ class AsmProcessorSPU(AsmProcessor):
         arch = self.config.arch
         assert any(
             r in row
-            for r in ["R_PPC_REL24", "R_PPC_ADDR16", "R_PPC_EMB_SDA21", "R_PPC_REL14"]
+            for r in ["SPU_ADDR18", "SPU_REL16", ]
         ), f"unknown relocation type '{row}' for line '{prev}'"
         before, imm, after = parse_relocated_line(prev)
         repl = row.split()[-1]
@@ -2634,7 +2634,7 @@ SPU_SETTINGS = ArchSettings(
     re_imm=re.compile(
         r"(\b|-)([0-9]+|0x[0-9a-fA-F]+)\b(?!\(\$1\))|[^ \t,]"
     ),
-    re_reloc=re.compile(r"R_SPU_"),
+    re_reloc=re.compile(r"SPU_"),
     arch_flags=[],
     branch_instructions=SPU_BRANCH_INSTRUCTIONS,
     instructions_with_address_immediates=SPU_BRANCH_INSTRUCTIONS.union("hbrr"),

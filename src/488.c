@@ -1,6 +1,6 @@
 #include "include_asm.h"
 #include "funcs.h"
-#include "obj1.h"
+#include "structs.h"
 
 int func_488(void) {
     obj1 sp20;
@@ -21,7 +21,6 @@ int func_488(void) {
 }
 
 // 4f8
-// temp rename from obj1__ctor
 extern const obj1_vtable data_22840;
 void obj1__ctor(obj1* this) {
     this->vtable = &data_22840.inner;
@@ -29,7 +28,6 @@ void obj1__ctor(obj1* this) {
 
 extern char data_25300[];
 
-// temporary rename from func_510
 void func_510(obj1* arg0) {
     func_d938(arg0, data_25300); // \n
     func_d938(arg0, "Boot Loader SE Version 3.5.6 ");
@@ -40,37 +38,142 @@ void func_510(obj1* arg0) {
     func_d938(arg0, data_25300); // \n
 }
 
-void __attribute__((naked)) func_580(void) {
-    // Needs data/rodata migration
-    INCLUDE_ASM("asm/nonmatching", func_580);
+int func_580(int arg0, long long arg1, const char* arg2, long long* arg3, long long* arg4) {
+    struct_func_1ab0 sp20;
+    long long sp30[6];
+
+    if(arg2[0] == 0) {
+        return -3;
+    }
+
+    if(func_1ab0(arg1, &sp20) != 0) {
+        return -1;
+    }
+
+    if(func_18e0(arg1 + 0x10, sp20.unk04, arg2, sp30) != 0) {
+        return -1;
+    }
+
+    *arg3 = arg1 + sp30[0];
+    *arg4 = sp30[1];
+
+    return 0;
 }
 
+int func_678(int arg0, long long arg1, long long* arg2) {
+    long long sp20;
+    long long sp30;
+    long long res;
 
-int __attribute__((naked)) func_678(int arg0, int arg1, int arg2) {
-    INCLUDE_ASM("asm/nonmatching", func_678);
+    res = func_f3e0(arg0, arg1, 0x400);
+
+    if(res == -1) {
+        return -1;
+    }
+
+    if(func_580(arg0, res, "updater", &sp20, &sp30) != 0) {
+        return -1;
+    }
+
+    res = func_f3e0(arg0, sp20, sp30);
+
+    *arg2 = res;
+
+    if(res == -1) {
+        return -1;
+    }
+
+    return 0;
 }
 
 void __attribute__((naked)) func_730(void) {
     INCLUDE_ASM("asm/nonmatching", func_730);
 }
 
-void __attribute__((naked)) func_780(void) {
+long long __attribute__((naked)) func_780(void) {
     INCLUDE_ASM("asm/nonmatching", func_780);
 }
 
-void __attribute__((naked)) func_808(int arg0, int arg1, int arg2) {
-    INCLUDE_ASM("asm/nonmatching", func_808);
+int func_808(int arg0, long long arg1, long long* arg2) {
+    // TODO: is there a better way than this array?
+    long long sp20[12];
+
+    long long res;
+    long long bank;
+
+    res = func_f3e0(arg0, arg1, 0x400);
+
+    if(res == -1) {
+        return -1;
+    }
+
+    if(func_580(arg0, res, "bank_indicator", &sp20[0], &sp20[8]) != 0) {
+        return -1;
+    }
+
+    if(func_f3e0(arg0, sp20[0], sp20[8]) == -1) {
+        return -1;
+    }
+
+    bank = func_780();
+
+    if(func_580(arg0, res, bank < 0 ? "lv0_bank0" : "lv0_bank1", &sp20[6], &sp20[4]) != 0) {
+        return -1;
+    }
+
+    res = func_f3e0(arg0, sp20[6], 0x400);
+    if(res == -1) {
+        return -1;
+    }
+
+    if(func_580(arg0, res, "lv0", &sp20[2], &sp20[10]) != 0) {
+        return -1;
+    }
+
+    res = func_f3e0(arg0, sp20[2], sp20[10]);
+
+    *arg2 = res;
+
+    if(res == -1) {
+        return -1;
+    }
+
+    return 0;
 }
 
-void __attribute__((naked)) func_970(void) {
+void __attribute__((naked)) func_970(long long arg0, struct_func_1ab0* arg1, int arg2) {
     INCLUDE_ASM("asm/nonmatching", func_970);
 }
 
-void __attribute__((naked)) func_a18(int arg0, int arg1, int arg2) {
+int __attribute__((naked)) func_a18(int arg0, long long arg1, long long* arg2) {
     INCLUDE_ASM("asm/nonmatching", func_a18);
 }
 
-void func_c68(int arg1, int arg2, int arg3) {
+// int func_dc80(int);
+//
+// int func_a18(int arg0, long long arg1, long long* arg2) {
+//     long long sp30;
+//     long long sp40;
+//     long long res;
+//
+//     res = func_f3e0(arg0, arg1, 0x3E0);
+//     if(res == -1) {
+//         return -1;
+//     }
+//
+//     if(func_f2a8(arg0) == 3) {
+//         int bank = func_dc80(arg0);
+//         int result = func_580(arg0, res, (bank == 0) ? "ros0" : "ros1", &sp30, &sp40);
+//         if(result != 0) {
+//             return result;
+//         }
+//     } else {
+//         func_580(arg0, res, "ros", &sp30, &sp40);
+//
+//     }
+// }
+
+void func_c68(int arg1, long long arg2, long long* arg3) {
     if(func_f2a8(arg1) > 0) {
         func_a18(arg1, arg2, arg3);
     } else {
@@ -78,7 +181,7 @@ void func_c68(int arg1, int arg2, int arg3) {
     }
 }
 
-int __attribute__((naked)) func_cf0(obj1* this, int* arg1) {
+int __attribute__((naked)) func_cf0(obj1* this, long long* arg1) {
     INCLUDE_ASM("asm/nonmatching", func_cf0);
 }
 
@@ -88,7 +191,7 @@ void func_e38(obj1* arg0, int arg1, int arg2) {
 
 int func_e40(obj1* this) {
     int res;
-    int temp;
+    long long temp;
 
     func_10050();
     res = func_ff8(this);
@@ -122,7 +225,7 @@ int func_e40(obj1* this) {
     return res;
 }
 
-int func_f28(int arg0, int arg1, int arg2) {
+int func_f28(int arg0, long long arg1, long long* arg2) {
     if(func_f2a8(arg0) <= 0) {
         return func_678(arg0, arg1, arg2);
     }
@@ -130,7 +233,7 @@ int func_f28(int arg0, int arg1, int arg2) {
     return -1;
 }
 
-extern int data_2f9b0;
+extern unk_struct_2f9b0 data_2f9b0;
 
 void func_fa0(int arg0, int arg1) {
     if(arg0 == 1) {
@@ -142,27 +245,30 @@ void func_fa0(int arg0, int arg1) {
             func_2818(&data_2f9b0);
         }
     }
-
-    return;
 }
 
-void __attribute__((naked)) func_fd8(void) {
-    INCLUDE_ASM("asm/nonmatching", func_fd8);
+void func_fd8(void) {
+    func_fa0(0, 0xFFFF);
 }
 
-void __attribute__((naked)) func_fe8(void) {
-    INCLUDE_ASM("asm/nonmatching", func_fe8);
+void func_fe8(void) {
+    func_fa0(1, 0xFFFF);
 }
 
-int __attribute__((naked)) func_ff8(obj1* this) {
-    INCLUDE_ASM("asm/nonmatching", func_ff8);
+int func_ff8(obj1* this) {
+    int sp20;
+    if(func_1740(&sp20) == 0) {
+        return 0;
+    } else {
+        return -5;
+    }
 }
 
 void __attribute__((naked)) func_1028(obj1* this) {
     INCLUDE_ASM("asm/nonmatching", func_1028);
 }
 
-void __attribute__((naked)) func_1040(void) {
+void __attribute__((naked)) func_1040(int arg0, int arg2) {
     INCLUDE_ASM("asm/nonmatching", func_1040);
 }
 
@@ -174,13 +280,28 @@ void __attribute__((naked)) func_1120(obj1* this) {
     INCLUDE_ASM("asm/nonmatching", func_1120);
 }
 
-void __attribute__((naked)) func_1170(void) {
-    INCLUDE_ASM("asm/nonmatching", func_1170);
+extern int data_22af8;
+
+void func_1170(unk_struct_1188_3* arg0) {
+    arg0->unk00 = &data_22af8;
+    func_46a0(arg0);
 }
 
-int __attribute__((naked)) func_1188(obj1* this, int arg1) {
-    INCLUDE_ASM("asm/nonmatching", func_1188);
-}
+extern const unsigned char data_22880[];
+extern const unsigned char data_22890[];
+extern const unsigned char data_228a0[];
+extern const unsigned char data_228c0[];
+extern int data_27a10;
+
+typedef struct {
+    /* 0x00 */ unk_struct_1188_3* unk00;
+    /* 0x04 */ char unk04[0x1C];
+} unk_struct_1188; // size = 0x20
+
+int func_2210(unk_struct_2f9b0*, int, const unsigned char*, const unsigned char*, int*, const unsigned char*, unk_struct_1188*, int);
+int func_1b48(unk_struct_2f9b0*, unk_struct_1188_2*);
+
+int func_2870(unk_struct_2f9b0*, int*);
 
 const obj1_vtable data_22840 = {
     {0},
@@ -198,6 +319,68 @@ const obj1_vtable data_22840 = {
 const unsigned char data_22870[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x50, 0x9C, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
+
+typedef struct {
+    /* 0x00 */ char unk00[0x10];
+    /* 0x20 */ short unk20;
+    /* 0x22 */ char unk22[0xE];
+} unk_struct_1188_4; // size = 0x30?
+
+int __attribute__((naked)) func_1188(obj1* this, long long arg1) {
+    INCLUDE_ASM("asm/nonmatching", func_1188);
+    // unk_struct_1188 sp20;
+    // unk_struct_1188_2 sp40;
+    // unk_struct_1188_3 sp60;
+    // unk_struct_1188_3 sp90;
+    // unk_struct_1188_3 spc0;
+    // unk_struct_1188_3 spf0;
+    // int sp120;
+    // int sp160;
+    // int sp190;
+    // int res;
+    //
+    // func_1e00(&data_2f9b0, arg1);
+    // func_4a58(&spf0, 0);
+    // func_4618(&spf0, (void*)0x3e000, 0x2000);
+    // sp20.unk00 = &spf0;
+    // res = func_2210(&data_2f9b0, 1, data_228a0, data_228c0, &data_27a10, data_22890, &sp20, 1);
+    //
+    // if(res != 0) {
+    //     func_1170(&spf0);
+    //     return res;
+    // }
+    //
+    // func_1170(&spf0);
+    //
+    // while(data_2f9b0.unk0A != 0) {
+    //     if(func_1b48(&data_2f9b0, &sp40) != 0) {
+    //         return 13;
+    //     }
+    //
+    //     if(sp40.unk10 == 0x00030055FFFFFFFF) {
+    //         return 13;
+    //     }
+    //
+    //     func_4a58(&spf0, 0);
+    //     func_4a58(&spc0, 1);
+    //     func_4a58(&sp90, 2);
+    //     func_4a58(&sp60, 3);
+    //
+    //     res = func_2870(&data_2f9b0, &sp160);
+    //     if(res != 0) {
+    //         func_1170(&sp60);
+    //         func_1170(&sp90);
+    //         func_1170(&spc0);
+    //         func_1170(&spf0);
+    //
+    //         return res;
+    //     }
+    //
+    //     for(int i = 0; i < )
+    // }
+    //
+    // return res;
+}
 
 const unsigned char data_22880[] = {
     0x00, 0x03, 0x00, 0x55, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

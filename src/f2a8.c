@@ -1,11 +1,5 @@
 #include "funcs.h"
-
-typedef struct IfiHeader {
-    /* 0x00 */ int magic;
-    /* 0x04 */ int version_major;
-    /* 0x08 */ int version_minor;
-    /* 0x0C */ int version_micro;
-} IfiHeader; // size = 0x10
+#include "structs.h"
 
 extern char data_24fe0[];
 extern char data_25000[];
