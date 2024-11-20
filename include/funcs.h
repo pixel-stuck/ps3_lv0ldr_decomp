@@ -3,13 +3,11 @@
 
 #include "structs.h"
 
-
-
 int func_488(void);
 void obj1__ctor(obj1*);
 void func_510(obj1*);
 int func_808(int, long long, long long*);
-void func_970(long long, struct_func_1ab0*, int);
+void func_970(long long, void*, int);
 int func_a18(int, long long, long long*);
 int func_cf0(obj1*, long long*);
 void func_e38(obj1*, int, int);
@@ -33,32 +31,34 @@ void func_46b8(unk_struct_1188_3*);
 //dtor
 void func_46a0(unk_struct_1188_3*);
 
-void func_f3b8(obj1*);
-long long func_f3e0(int, long long, int);
-
 void func_d538(unk_struct_1188_3*);
-
-void func_d938(obj1*, char*);
-void func_f590(obj1* arg0, int arg1, int arg2);
-void func_10050(void);
-void func_d7d8(void);
-int func_fc60(obj1*);
-int func_d808(void);
-void func_d5d8(void);
-void func_d8a0(void);
 void func_d550(void);
-int func_f180(void);
-unsigned char func_f210(void);
-void func_1ddc8(char*, ...);
-void __attribute__((noreturn)) func_1da98(int, char*, ...);
-int func_f2a8(int);
-void func_1ced0(void);
-int func_1c070(void);
+void func_d5d8(void);
+void func_d7d8(void);
+int func_d808(void);
+void func_d8a0(void);
+void func_d938(obj1*, char*);
+int func_dc80(int);
+
 int func_e0b8(void);
 void func_e430(obj1*);
 void func_eb98(int, int);
+
+int func_f180(void);
+unsigned char func_f210(void);
+int func_f2a8(int);
+void func_f3b8(obj1*);
+long long func_f3e0(int, long long, int);
+void func_f590(obj1* arg0, int arg1, int arg2);
+int func_fc60(obj1*);
+
+void func_10050(void);
 void func_18038(void);
 void func_18560(void);
+void func_1ced0(void);
+int func_1c070(void);
+void __attribute__((noreturn)) func_1da98(int, char*, ...);
+void func_1ddc8(char*, ...);
 void func_1df60(int*, int);
 
 #endif

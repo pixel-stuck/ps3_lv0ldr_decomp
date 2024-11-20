@@ -141,43 +141,72 @@ int func_808(int arg0, long long arg1, long long* arg2) {
     return 0;
 }
 
-void __attribute__((naked)) func_970(long long arg0, struct_func_1ab0* arg1, int arg2) {
+void __attribute__((naked)) func_970(long long arg0, void* arg1, int arg2) {
     INCLUDE_ASM("asm/nonmatching", func_970);
 }
 
-int __attribute__((naked)) func_a18(int arg0, long long arg1, long long* arg2) {
-    INCLUDE_ASM("asm/nonmatching", func_a18);
+int func_a18(int arg0, long long arg1, long long* arg2) {
+    long long sp20[12];
+    long long temp2;
+    long long temp1;
+    int result;
+
+    temp1 = func_f3e0(arg0, arg1, 0x3E0);
+    if(temp1 == -1) {
+        return -1;
+    }
+
+    if(func_f2a8(arg0) == 3) {
+        int bank = func_dc80(arg0);
+        result = func_580(arg0, temp1, (bank == 0) ? "ros0" : "ros1", &sp20[4], &sp20[2]);
+        if(result != 0) {
+            return result;
+        }
+        temp2 = sp20[4];
+    } else {
+        result = func_580(arg0, temp1, "ros", &sp20[2], &sp20[4]);
+        if(result != 0) {
+            return result;
+        }
+        sp20[2] = sp20[2] - temp1 + arg1;
+        temp1 = func_f3e0(arg0, sp20[2], 0x20);
+        if(temp1 == -1) {
+            return -1;
+        }
+
+        func_970(temp1, &sp20[8], 0x20);
+        temp2 = sp20[2] + sp20[8];
+    }
+
+    temp1 = func_f3e0(arg0, temp2, 0x3E0);
+    if(temp1 == -1) {
+        return -1;
+    }
+
+    temp1 += 0x10;
+
+    result = func_580(arg0, temp1, "lv0", &sp20[0], &sp20[6]);
+    if(result != 0) {
+        return result;
+    }
+
+    sp20[0] = (temp2 + 0x10) + (sp20[0] - temp1);
+    temp1 = func_f3e0(arg0, sp20[0], sp20[6]);
+
+    *arg2 = temp1;
+
+    if(temp1 == -1) {
+        return -1;
+    }
+
+    return result;
 }
 
-// int func_dc80(int);
-//
-// int func_a18(int arg0, long long arg1, long long* arg2) {
-//     long long sp30;
-//     long long sp40;
-//     long long res;
-//
-//     res = func_f3e0(arg0, arg1, 0x3E0);
-//     if(res == -1) {
-//         return -1;
-//     }
-//
-//     if(func_f2a8(arg0) == 3) {
-//         int bank = func_dc80(arg0);
-//         int result = func_580(arg0, res, (bank == 0) ? "ros0" : "ros1", &sp30, &sp40);
-//         if(result != 0) {
-//             return result;
-//         }
-//     } else {
-//         func_580(arg0, res, "ros", &sp30, &sp40);
-//
-//     }
-// }
-
-void func_c68(int arg1, long long arg2, long long* arg3) {
+int func_c68(int arg1, long long arg2, long long* arg3) {
     if(func_f2a8(arg1) > 0) {
-        func_a18(arg1, arg2, arg3);
+        return func_a18(arg1, arg2, arg3);
     } else {
-        func_808(arg1, arg2, arg3);
+        return func_808(arg1, arg2, arg3);
     }
 }
 
