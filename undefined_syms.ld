@@ -245,3 +245,4 @@ data_22ad8 = 0x22ad8;
 data_31ec0 = 0x31ec0;
 data_22a98 = 0x22a98;
 data_22ab8 = 0x22ab8;
+data_24dd0 = 0x24dd0;

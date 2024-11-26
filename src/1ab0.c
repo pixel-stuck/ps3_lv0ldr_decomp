@@ -1,7 +1,7 @@
 #include "structs.h"
 #include "funcs.h"
 
-int func_1ab0(long long arg0, struct_func_1ab0* arg1) {
+s32 func_1ab0(u64 arg0, struct_func_1ab0* arg1) {
     struct_func_1ab0 sp20;
 
     if((arg0 & 0xF) != 0) {

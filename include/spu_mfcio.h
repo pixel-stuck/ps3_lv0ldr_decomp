@@ -20,8 +20,7 @@
 #ifdef __IN_LIBGCC2
 typedef unsigned long long uint64_t;
 #else
-// #include <stdint.h>
-typedef unsigned long long uint64_t;
+#include "types.h"
 #endif
 #ifdef __cplusplus
 extern "C" {

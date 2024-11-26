@@ -2,8 +2,8 @@
 
 #ifdef NON_MATCHING
 // seems to be the correct behavior, but clearly it needs to be written some other way
-int func_4758(int arg0, unsigned int arg1) {
-    int temp;
+s32 func_4758(s32 arg0, u32 arg1) {
+    s32 temp;
 
     if (arg1 == 0) {
         temp = 0;

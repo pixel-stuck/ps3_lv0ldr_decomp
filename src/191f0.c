@@ -1,7 +1,8 @@
+#include "types.h"
 
-extern int data_33190;
+extern s32 data_33190;
 
-int func_191f0(int arg0) {
+s32 func_191f0(s32 arg0) {
     data_33190 = arg0;
 
     return 0;

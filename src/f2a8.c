@@ -10,7 +10,7 @@ extern IfiHeader data_31ed0;
 
 #define MAGIC(a, b, c, d) (a << 24 | b << 16 | c << 8 | d)
 
-int func_f2a8(obj_488* arg0) {
+s32 func_f2a8(obj_488* arg0) {
     if(func_f210() != 0) {
         if(data_31ed0.magic == MAGIC('I', 'F', 'I', '\0')) {
             if((data_31ed0.version_major == 1) && (data_31ed0.version_minor == 2)) {

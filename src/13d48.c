@@ -1,5 +1,5 @@
 #include "funcs.h"
 
-void func_13d48(int arg0, int arg1) {
+void func_13d48(s32 arg0, s32 arg1) {
     func_195b0(arg1);
 }

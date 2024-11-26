@@ -1,5 +1,5 @@
 #include "funcs.h"
 
-int func_f280(void) {
+s32 func_f280(void) {
     return !func_f180();
 }

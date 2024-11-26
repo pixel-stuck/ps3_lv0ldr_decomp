@@ -1,8 +1,10 @@
+#include "types.h"
+
 typedef struct {
     void* vtable;
 } obj2;
 
-extern int data_22ad8;
+extern s32 data_22ad8;
 
 void func_d538(void*);
 

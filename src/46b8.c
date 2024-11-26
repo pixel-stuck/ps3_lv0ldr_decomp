@@ -1,7 +1,8 @@
 // #include "include_asm.h"
 #include "structs.h"
+#include "types.h"
 
-extern int data_22ad8;
+extern s32 data_22ad8;
 
 void func_46b8(unk_struct_1188_3* arg0) {
     unk_struct_1188_3_inner* temp = &arg0->unk04;
