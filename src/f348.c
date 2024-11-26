@@ -3,7 +3,7 @@
 
 // TODO: migrate rodata
 #ifdef NON_MATCHING
-long long func_f348(int arg0) {
+long long func_f348(obj1* arg0) {
     if(func_f2a8(arg0) == 1) {
         return 0x2401FC40200;
     } else if(func_f2a8(arg0) == 2) {

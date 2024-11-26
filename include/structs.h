@@ -1,32 +1,59 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
-struct obj1;
+struct obj_488;
 
 typedef struct {
     /* 0x00 */ void* func0;
     /* 0x04 */ void* func1;
     /* 0x08 */ void* func2;
     /* 0x0C */ void* func3;
-    /* 0x10 */ int (*func4)(struct obj1*, long long);
-    /* 0x14 */ void (*func5)(struct obj1*);
-    /* 0x18 */ void (*func6)(struct obj1*);
-} obj1_vtable_inner; // size = 0x1C
+    /* 0x10 */ int (*func4)(struct obj_488*, long long);
+    /* 0x14 */ void (*func5)(struct obj_488*);
+    /* 0x18 */ void (*func6)(struct obj_488*);
+} obj_488_vtable_inner; // size = 0x1C
 
 typedef struct {
     /* 0x00 */ char unk0[8];
-    obj1_vtable_inner inner;
-} obj1_vtable;
+    obj_488_vtable_inner inner;
+} obj_488_vtable;
 
-typedef struct obj1 {
-    /* 0x00 */ const obj1_vtable_inner* vtable;
-} obj1; // size = ??
+typedef struct obj_488 {
+    /* 0x00 */ const obj_488_vtable_inner* vtable;
+} obj_488; // size = ??
+
+typedef struct unk_struct_2f9b0_sub {
+    /* 0x00 */ char unk00[0xC];
+    /* 0x0C */ int unk0C;
+    /* 0x10 */ int unk10;
+    /* 0x14 */ int unk14;
+} unk_struct_2f9b0_sub; // size = ??
+
+typedef struct unk_struct_2f9b0_sub2 {
+    /* 0x00 */ int unk00;
+} unk_struct_2f9b0_sub2; // size = ??
+
+typedef struct unk_struct_2f9b0_sub3 {
+    /* 0x00 */ unsigned char unk00[0x20];
+    /* 0x20 */ unsigned char unk20[0x40]; // TODO: correct size?
+    /* 0x60 */ unsigned char unk60[0x40]; // TODO: correct size?
+} unk_struct_2f9b0_sub3; // size = ??
 
 typedef struct unk_struct_2f9b0 {
-    /* 0x000 */ char unk00[10];
-    /* 0x00A */ short unk0A;
-    /* 0x00C */ char unk0C[0x1A4];
+    /* 0x000 */ unk_struct_2f9b0_sub* unk00;
+    /* 0x004 */ char unk04[4];
+    /* 0x008 */ unsigned char* unk08;
+    /* 0x00C */ unk_struct_2f9b0_sub2* unk0C;
+    /* 0x010 */ char unk10[0x50];
+    /* 0x060 */ unsigned char* unk60;
+    /* 0x064 */ int unk64;
+    /* 0x068 */ char unk68 [0x128];
+    /* 0x190 */ char unk190[0x18];
+    /* 0x1A8 */ unk_struct_2f9b0_sub3* unk1A8;
     /* 0x1B0 */ long long unk1B0;
+    /* 0x1B8 */ unsigned short unk1B8;
+    /* 0x1BA */ char unk1BA[0x1F8-0x1BA];
+    /* 0x1F8 */ char unk1F8;
 } unk_struct_2f9b0; // size = ??
 
 typedef struct IfiHeader {
@@ -38,7 +65,7 @@ typedef struct IfiHeader {
 
 typedef struct {
     /* 0x00 */ char unk00[0x10];
-    /* 0x10 */ long long unk10;
+    /* 0x10 */ unsigned long long unk10;
     /* 0x18 */ char unk18[0x8];
 } unk_struct_1188_2; // size = 0x20
 
