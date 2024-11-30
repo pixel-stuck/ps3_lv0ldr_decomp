@@ -30,6 +30,10 @@ GAME_GCC_CMD = f"{GAME_CC_DIR}/bin/gcc.exe -fno-unit-at-a-time -c -B {GAME_CC_DI
 
 GAME_COMPILE_CMD = f"{GAME_GCC_CMD} -o"
 
+GAME_GPP_CMD = f"{GAME_CC_DIR}/bin/g++.exe -fno-if-conversion2 -fno-unit-at-a-time -fno-inline -ffunction-sections -fdata-sections -c -B {GAME_CC_DIR}/bin -I {COMMON_INCLUDES} -Os $in"
+
+GAME_COMPILE_CPP_CMD = f"{GAME_GPP_CMD} -o"
+
 def clean():
     shutil.rmtree("asm", ignore_errors=True)
     shutil.rmtree("assets", ignore_errors=True)
@@ -72,6 +76,12 @@ def build_stuff():
         "cc",
         description="cc $in",
         command=f"{GAME_COMPILE_CMD} $out",
+    )
+
+    ninja.rule(
+        "cxx",
+        description="cxx $in",
+        command=f"{GAME_COMPILE_CPP_CMD} $out",
     )
 
     ninja.rule(

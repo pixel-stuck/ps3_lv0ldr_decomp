@@ -1,4 +1,5 @@
 from pathlib import Path
+import clang.cindex as index
 
 class Subsegment:
     def __init__(self, name, address, src_path):
@@ -7,6 +8,7 @@ class Subsegment:
         self.src_path = Path(src_path)
         self.object_path = Path("build/" + src_path.split('.')[0] + ".o")
         self.linker_sections = [".text", ".rodata", ".data", ".bss"]
+        self.linker_subsections = dict()
 
 class HandAsm(Subsegment):
     def __init__(self, name, address, src_path):
@@ -23,6 +25,37 @@ class Clang(Subsegment):
         super().__init__(name, address, src_path)
         self.build_rule = "cc"
 
+class Cpp(Subsegment):
+    def __init__(self, name, address, src_path):
+        super().__init__(name, address, src_path)
+        self.build_rule = "cxx"
+        self.generate_linker_subsections()
+
+    def generate_linker_subsections(self):
+        tu = index.TranslationUnit.from_source(self.src_path, args=["-Iinclude", "-DFUNC_ORDER"])
+        func_names = self.get_function_names(tu.cursor)
+        self.linker_subsections[".text"] = func_names
+        # self.linker_subsections[".rodata"] = func_names
+        # self.linker_subsections[".data"] = func_names
+
+    def get_function_names(self, cursor):
+        mangled = []
+
+        for child in cursor.get_children():
+            if(child.kind == index.CursorKind.CONSTRUCTOR and child.is_definition()):
+                mangled.append(child.mangled_name)
+
+            if(child.kind == index.CursorKind.FUNCTION_DECL and child.is_definition()):
+                mangled.append(child.mangled_name)
+
+            if(child.kind == index.CursorKind.CXX_METHOD and child.is_definition()):
+                mangled.append(child.mangled_name)
+
+            if(child.kind == index.CursorKind.CLASS_DECL):
+                mangled = self.get_function_names(child)
+
+        return mangled
+
 class Bin(Subsegment):
     def __init__(self, name, address, src_path):
         super().__init__(name, address, src_path)
@@ -36,16 +69,26 @@ def generate_linker(linker_path):
         for section in subsegment.linker_sections:
             if section not in sections:
                 sections[section] = []
-            sections[section].append(subsegment.object_path)
+            subsection = None
+            if section in subsegment.linker_subsections:
+                subsection = subsegment.linker_subsections[section]
+            sections[section].append((subsegment.object_path, subsegment.linker_subsections))
 
     f = open(linker_path, "w")
     f.write("SECTIONS\n{\n")
     f.write(f"\t. = 0x{BuildFiles[0].address:x};\n")
 
-    for section, paths in sections.items():
+    for section, section_info in sections.items():
         f.write(f"\t{section} BLOCK(0x10) : SUBALIGN(8)\n\t{{\n")
-        for path in paths:
-            f.write(f"\t\t{path}({section}.* {section});\n")
+
+        for info in section_info:
+            path, subsections = info
+
+            if section in subsections and subsections[section] is not None:
+                for subsection in subsections[section]:
+                    f.write(f"\t\t{path}({section}.{subsection});\n")
+            else:
+                f.write(f"\t\t{path}({section}.* {section});\n")
 
         f.write("\t}\n\n")
 
@@ -54,7 +97,7 @@ def generate_linker(linker_path):
 
 BuildFiles = [
     HandAsm("entrypoint", 0x400, "asm/400.s"),
-    Clang("488", 0x488, "src/488.c"),
+    Cpp("488", 0x488, "src/488.cpp"),
     # new TU ?
     Asm("func_1480", 0x1480, "asm/nonmatching/func_1480.s"),
     Asm("func_1560", 0x1560, "asm/nonmatching/func_1560.s"),
@@ -64,11 +107,11 @@ BuildFiles = [
     Asm("func_1720", 0x1720, "asm/nonmatching/func_1720.s"),
     Asm("func_1740", 0x1740, "asm/nonmatching/func_1740.s"),
     Asm("func_18e0", 0x18e0, "asm/nonmatching/func_18e0.s"),
-    Clang("1ab0", 0x1ab0, "src/1ab0.c"),
+    Cpp("1ab0", 0x1ab0, "src/1ab0.cpp"),
     Asm("func_1b48", 0x1b48, "asm/nonmatching/func_1b48.s"),
     Asm("func_1b88", 0x1b88, "asm/nonmatching/func_1b88.s"),
     Asm("func_1c00", 0x1c00, "asm/nonmatching/func_1c00.s"),
-    Clang("1e00", 0x1e00, "src/1e00.c"),
+    Cpp("1e00", 0x1e00, "src/1e00.cpp"),
     Asm("func_1e18", 0x1e18, "asm/nonmatching/func_1e18.s"),
     Asm("func_1f48", 0x1f48, "asm/nonmatching/func_1f48.s"),
     Asm("func_1fc8", 0x1fc8, "asm/nonmatching/func_1fc8.s"),
@@ -77,8 +120,9 @@ BuildFiles = [
     Asm("func_20f0", 0x20f0, "asm/nonmatching/func_20f0.s"),
     Asm("func_2150", 0x2150, "asm/nonmatching/func_2150.s"),
     Asm("func_2198", 0x2198, "asm/nonmatching/func_2198.s"),
+    Asm("func_21b0", 0x21b0, "asm/nonmatching/func_21b0.s"),
     Asm("func_21f8", 0x21f8, "asm/nonmatching/func_21f8.s"),
-    Clang("2210", 0x2210, "src/2210.c"),
+    Cpp("2210", 0x2210, "src/2210.cpp"),
     Asm("func_2680", 0x2680, "asm/nonmatching/func_2680.s"),
     Asm("func_26b8", 0x26b8, "asm/nonmatching/func_26b8.s"),
     Asm("func_2818", 0x2818, "asm/nonmatching/func_2818.s"),
@@ -87,21 +131,21 @@ BuildFiles = [
     Asm("func_28c0", 0x28c0, "asm/nonmatching/func_28c0.s"),
     Asm("func_29e0", 0x29e0, "asm/nonmatching/func_29e0.s"),
     Asm("func_2a50", 0x2a50, "asm/nonmatching/func_2a50.s"),
-    Clang("2a98", 0x2a98, "src/2a98.c"),
+    Cpp("2a98", 0x2a98, "src/2a98.cpp"),
     Asm("2aa0", 0x2aa0, "asm/nonmatching/func_2aa0.s"),
     Asm("func_2ab8", 0x2ab8, "asm/nonmatching/func_2ab8.s"),
     Asm("func_2ce8", 0x2ce8, "asm/nonmatching/func_2ce8.s"),
     Asm("func_2f78", 0x2f78, "asm/nonmatching/func_2f78.s"),
     Asm("func_2fc8", 0x2fc8, "asm/nonmatching/func_2fc8.s"),
     Asm("func_3008", 0x3008, "asm/nonmatching/func_3008.s"),
-    Clang("3040", 0x3040, "src/3040.c"),
-    Clang("3050", 0x3050, "src/3050.c"),
+    Cpp("3040", 0x3040, "src/3040.cpp"),
+    Cpp("3050", 0x3050, "src/3050.cpp"),
     Asm("func_3060", 0x3060, "asm/nonmatching/func_3060.s"),
     Asm("func_30a0", 0x30a0, "asm/nonmatching/func_30a0.s"),
     Asm("func_30f0", 0x30f0, "asm/nonmatching/func_30f0.s"),
     Asm("func_3130", 0x3130, "asm/nonmatching/func_3130.s"),
-    Clang("3168", 0x3168, "src/3168.c"),
-    Clang("3178", 0x3178, "src/3178.c"),
+    Cpp("3168", 0x3168, "src/3168.cpp"),
+    Cpp("3178", 0x3178, "src/3178.cpp"),
     Asm("func_3188", 0x3188, "asm/nonmatching/func_3188.s"),
     Asm("func_31d0", 0x31d0, "asm/nonmatching/func_31d0.s"),
     Asm("func_3290", 0x3290, "asm/nonmatching/func_3290.s"),
@@ -120,11 +164,11 @@ BuildFiles = [
     Asm("func_3b48", 0x3b48, "asm/nonmatching/func_3b48.s"),
     Asm("func_3bc0", 0x3bc0, "asm/nonmatching/func_3bc0.s"),
     Asm("func_3c08", 0x3c08, "asm/nonmatching/func_3c08.s"),
-    Clang("3c30", 0x3c30, "src/3c30.c"),
-    Clang("3c40", 0x3c40, "src/3c40.c"),
+    Cpp("3c30", 0x3c30, "src/3c30.cpp"),
+    Cpp("3c40", 0x3c40, "src/3c40.cpp"),
     Asm("func_3c50", 0x3c50, "asm/nonmatching/func_3c50.s"),
-    Clang("3c78", 0x3c78, "src/3c78.c"),
-    Clang("3c88", 0x3c88, "src/3c88.c"),
+    Cpp("3c78", 0x3c78, "src/3c78.cpp"),
+    Cpp("3c88", 0x3c88, "src/3c88.cpp"),
     Asm("func_3c90", 0x3c90, "asm/nonmatching/func_3c90.s"),
     Asm("func_3e28", 0x3e28, "asm/nonmatching/func_3e28.s"),
     Asm("func_3f78", 0x3f78, "asm/nonmatching/func_3f78.s"),
@@ -135,20 +179,20 @@ BuildFiles = [
     Asm("func_42f8", 0x42f8, "asm/nonmatching/func_42f8.s"),
     Asm("func_4470", 0x4470, "asm/nonmatching/func_4470.s"),
     Asm("func_44e8", 0x44e8, "asm/nonmatching/func_44e8.s"),
-    Clang("4618", 0x4618, "src/4618.c"),
-    Clang("4670", 0x4670, "src/4670.c"),
-    Clang("46a0", 0x46a0, "src/46a0.c"),
-    Clang("46b8", 0x46b8, "src/46b8.c"),
-    Clang("4758", 0x4758, "src/4758.c"),
-    Clang("47b0", 0x47b0, "src/47b0.c"),
-    Clang("47f8", 0x47f8, "src/47f8.c"),
-    Clang("4800", 0x4800, "src/4800.c"),
-    Clang("4828", 0x4828, "src/4828.c"),
-    Clang("4838", 0x4838, "src/4838.c"),
+    Cpp("4618", 0x4618, "src/4618.cpp"),
+    Cpp("4670", 0x4670, "src/4670.cpp"),
+    Cpp("46a0", 0x46a0, "src/46a0.cpp"),
+    Cpp("46b8", 0x46b8, "src/46b8.cpp"),
+    Cpp("4758", 0x4758, "src/4758.cpp"),
+    Cpp("47b0", 0x47b0, "src/47b0.cpp"),
+    Cpp("47f8", 0x47f8, "src/47f8.cpp"),
+    Cpp("4800", 0x4800, "src/4800.cpp"),
+    Cpp("4828", 0x4828, "src/4828.cpp"),
+    Cpp("4838", 0x4838, "src/4838.cpp"),
     Asm("func_49f8", 0x49f8, "asm/nonmatching/func_49f8.s"),
-    Clang("4a58", 0x4a58, "src/4a58.c"),
+    Cpp("4a58", 0x4a58, "src/4a58.cpp"),
     Asm("func_4ab0", 0x4ab0, "asm/nonmatching/func_4ab0.s"),
-    Clang("4c28", 0x4c28, "src/4c28.c"),
+    Cpp("4c28", 0x4c28, "src/4c28.cpp"),
     Asm("func_4d98", 0x4d98, "asm/nonmatching/func_4d98.s"),
     Asm("func_5098", 0x5098, "asm/nonmatching/func_5098.s"),
     Asm("func_5428", 0x5428, "asm/nonmatching/func_5428.s"),
@@ -220,15 +264,15 @@ BuildFiles = [
     Asm("func_d0d8", 0xd0d8, "asm/nonmatching/func_d0d8.s"),
     Asm("func_d2a8", 0xd2a8, "asm/nonmatching/func_d2a8.s"),
     Asm("func_d340", 0xd340, "asm/nonmatching/func_d340.s"),
-    Clang("d3b0", 0xd3b0, "src/d3b0.c"),
+    Cpp("d3b0", 0xd3b0, "src/d3b0.cpp"),
     Asm("func_d3c0", 0xd3c0, "asm/nonmatching/func_d3c0.s"),
     Asm("func_d440", 0xd440, "asm/nonmatching/func_d440.s"),
-    Clang("d4c0", 0xd4c0, "src/d4c0.c"),
+    Cpp("d4c0", 0xd4c0, "src/d4c0.cpp"),
     Asm("func_d4c8", 0xd4c8, "asm/nonmatching/func_d4c8.s"),
     Asm("func_d4f8", 0xd4f8, "asm/nonmatching/func_d4f8.s"),
-    Clang("d538", 0xd538, "src/d538.c"),
-    Clang("d540", 0xd540, "src/d540.c"), # __cxa_pure_virtual
-    Clang("d548", 0xd548, "src/d548.c"),
+    Cpp("d538", 0xd538, "src/d538.cpp"),
+    Cpp("d540", 0xd540, "src/d540.cpp"), # __cxa_pure_virtual
+    Cpp("d548", 0xd548, "src/d548.cpp"),
     Asm("func_d550", 0xd550, "asm/nonmatching/func_d550.s"),
     Asm("func_d5d8", 0xd5d8, "asm/nonmatching/func_d5d8.s"),
     Asm("func_d660", 0xd660, "asm/nonmatching/func_d660.s"),
@@ -241,7 +285,7 @@ BuildFiles = [
     # new TU ?
     Asm("func_d808", 0xd808, "asm/nonmatching/func_d808.s"),
     Asm("func_d8a0", 0xd8a0, "asm/nonmatching/func_d8a0.s"),
-    Clang("d938", 0xd938, "src/d938.c"),
+    Cpp("d938", 0xd938, "src/d938.cpp"),
     Asm("func_d940", 0xd940, "asm/nonmatching/func_d940.s"),
     Asm("func_d9c0", 0xd9c0, "asm/nonmatching/func_d9c0.s"),
     Asm("func_da40", 0xda40, "asm/nonmatching/func_da40.s"),
@@ -249,7 +293,7 @@ BuildFiles = [
     Asm("func_db30", 0xdb30, "asm/nonmatching/func_db30.s"),
     Asm("func_dba0", 0xdba0, "asm/nonmatching/func_dba0.s"),
     Asm("func_dc28", 0xdc28, "asm/nonmatching/func_dc28.s"),
-    Asm("func_dc80", 0xdc80, "asm/nonmatching/func_dc80.s"),
+    Cpp("dc80", 0xdc80, "src/dc80.cpp"),
     Asm("func_dcd8", 0xdcd8, "asm/nonmatching/func_dcd8.s"),
     Asm("func_dd30", 0xdd30, "asm/nonmatching/func_dd30.s"),
     Asm("func_dd88", 0xdd88, "asm/nonmatching/func_dd88.s"),
@@ -278,19 +322,19 @@ BuildFiles = [
     Asm("func_ec08", 0xec08, "asm/nonmatching/func_ec08.s"),
     Asm("func_eca8", 0xeca8, "asm/nonmatching/func_eca8.s"),
     Asm("func_f180", 0xf180, "asm/nonmatching/func_f180.s"),
-    Clang("f210", 0xf210, "src/f210.c"),
-    Clang("f280", 0xf280, "src/f280.c"),
-    Clang("f2a8", 0xf2a8, "src/f2a8.c"),
-    Clang("f348", 0xf348, "src/f348.c"),
-    Clang("f3b8", 0xf3b8, "src/f3b8.c"),
+    Cpp("f210", 0xf210, "src/f210.cpp"),
+    Cpp("f280", 0xf280, "src/f280.cpp"),
+    Cpp("f2a8", 0xf2a8, "src/f2a8.cpp"),
+    Cpp("f348", 0xf348, "src/f348.cpp"),
+    Cpp("f3b8", 0xf3b8, "src/f3b8.cpp"),
     Asm("func_f3e0", 0xf3e0, "asm/nonmatching/func_f3e0.s"),
-    Clang("f590", 0xf590, "src/f590.c"),
+    Cpp("f590", 0xf590, "src/f590.cpp"),
     Asm("func_f620", 0xf620, "asm/nonmatching/func_f620.s"),
     Asm("func_f668", 0xf668, "asm/nonmatching/func_f668.s"),
     Asm("func_f6b0", 0xf6b0, "asm/nonmatching/func_f6b0.s"),
     Asm("func_fc60", 0xfc60, "asm/nonmatching/func_fc60.s"),
     Asm("func_10050", 0x10050, "asm/nonmatching/func_10050.s"),
-    Clang("10360", 0x10360, "src/10360.c"),
+    Cpp("10360", 0x10360, "src/10360.cpp"),
     Asm("func_10368", 0x10368, "asm/nonmatching/func_10368.s"),
     # new TU ?
     Asm("func_104b0", 0x104b0, "asm/nonmatching/func_104b0.s"),
@@ -319,7 +363,7 @@ BuildFiles = [
     Asm("func_12488", 0x12488, "asm/nonmatching/func_12488.s"),
     Asm("func_124c0", 0x124c0, "asm/nonmatching/func_124c0.s"),
     Asm("func_127d8", 0x127d8, "asm/nonmatching/func_127d8.s"),
-    Clang("12af0", 0x12af0, "src/12af0.c"),
+    Cpp("12af0", 0x12af0, "src/12af0.cpp"),
     Asm("func_12b08", 0x12b08, "asm/nonmatching/func_12b08.s"),
     Asm("func_12b88", 0x12b88, "asm/nonmatching/func_12b88.s"),
     Asm("func_12f88", 0x12f88, "asm/nonmatching/func_12f88.s"),
@@ -328,12 +372,12 @@ BuildFiles = [
     Asm("func_136f8", 0x136f8, "asm/nonmatching/func_136f8.s"),
     Asm("func_13aa8", 0x13aa8, "asm/nonmatching/func_13aa8.s"),
     Asm("func_13b60", 0x13b60, "asm/nonmatching/func_13b60.s"),
-    Clang("13c58", 0x13c58, "src/13c58.c"),
+    Cpp("13c58", 0x13c58, "src/13c58.cpp"),
     Asm("func_13c60", 0x13c60, "asm/nonmatching/func_13c60.s"),
-    Clang("13d48", 0x13d48, "src/13d48.c"),
+    Cpp("13d48", 0x13d48, "src/13d48.cpp"),
     Asm("func_13d50", 0x13d50, "asm/nonmatching/func_13d50.s"),
     Asm("func_13e10", 0x13e10, "asm/nonmatching/func_13e10.s"),
-    Clang("142d8", 0x142d8, "src/142d8.c"),
+    Cpp("142d8", 0x142d8, "src/142d8.cpp"),
     Asm("func_142e0", 0x142e0, "asm/nonmatching/func_142e0.s"),
     Asm("func_145d8", 0x145d8, "asm/nonmatching/func_145d8.s"),
     Asm("func_14620", 0x14620, "asm/nonmatching/func_14620.s"),
@@ -350,7 +394,7 @@ BuildFiles = [
     Asm("func_16660", 0x16660, "asm/nonmatching/func_16660.s"),
     Asm("func_16cb8", 0x16cb8, "asm/nonmatching/func_16cb8.s"),
     Asm("func_16df8", 0x16df8, "asm/nonmatching/func_16df8.s"),
-    Clang("16f30", 0x16f30, "src/16f30.c"),
+    Cpp("16f30", 0x16f30, "src/16f30.cpp"),
     Asm("func_16f38", 0x16f38, "asm/nonmatching/func_16f38.s"),
     Asm("func_17368", 0x17368, "asm/nonmatching/func_17368.s"),
     Asm("func_173f8", 0x173f8, "asm/nonmatching/func_173f8.s"),
@@ -367,13 +411,13 @@ BuildFiles = [
     Asm("func_18298", 0x18298, "asm/nonmatching/func_18298.s"),
     Asm("func_183c0", 0x183c0, "asm/nonmatching/func_183c0.s"),
     Asm("func_184d0", 0x184d0, "asm/nonmatching/func_184d0.s"),
-    Clang("18550", 0x18550, "src/18550.c"),
+    Cpp("18550", 0x18550, "src/18550.cpp"),
     Asm("func_18560", 0x18560, "asm/nonmatching/func_18560.s"),
     # new TU?
     Asm("func_18608", 0x18608, "asm/nonmatching/func_18608.s"),
     Asm("func_18738", 0x18738, "asm/nonmatching/func_18738.s"),
     Asm("func_188f0", 0x188f0, "asm/nonmatching/func_188f0.s"),
-    Clang("18ce0", 0x18ce0, "src/18ce0.c"),
+    Cpp("18ce0", 0x18ce0, "src/18ce0.cpp"),
     Asm("func_18d00", 0x18d00, "asm/nonmatching/func_18d00.s"),
     Asm("func_18d90", 0x18d90, "asm/nonmatching/func_18d90.s"),
     Asm("func_18df0", 0x18df0, "asm/nonmatching/func_18df0.s"),
@@ -382,17 +426,17 @@ BuildFiles = [
     Asm("func_18f90", 0x18f90, "asm/nonmatching/func_18f90.s"),
     Asm("func_19090", 0x19090, "asm/nonmatching/func_19090.s"),
     Asm("func_191a8", 0x191a8, "asm/nonmatching/func_191a8.s"),
-    Clang("191f0", 0x191f0, "src/191f0.c"),
+    Cpp("191f0", 0x191f0, "src/191f0.cpp"),
     Asm("func_19200", 0x19200, "asm/nonmatching/func_19200.s"),
     Asm("func_19270", 0x19270, "asm/nonmatching/func_19270.s"),
     Asm("func_192b0", 0x192b0, "asm/nonmatching/func_192b0.s"),
-    Clang("194c8", 0x194c8, "src/194c8.c"),
+    Cpp("194c8", 0x194c8, "src/194c8.cpp"),
     Asm("func_194d0", 0x194d0, "asm/nonmatching/func_194d0.s"),
     Asm("func_19548", 0x19548, "asm/nonmatching/func_19548.s"),
     Asm("func_195b0", 0x195b0, "asm/nonmatching/func_195b0.s"),
     Asm("func_19618", 0x19618, "asm/nonmatching/func_19618.s"),
     Asm("func_196c0", 0x196c0, "asm/nonmatching/func_196c0.s"),
-    Clang("196f0", 0x196f0, "src/196f0.c"),
+    Cpp("196f0", 0x196f0, "src/196f0.cpp"),
     Asm("func_196f8", 0x196f8, "asm/nonmatching/func_196f8.s"),
     Asm("func_19740", 0x19740, "asm/nonmatching/func_19740.s"),
     Asm("func_197f0", 0x197f0, "asm/nonmatching/func_197f0.s"),
@@ -413,7 +457,7 @@ BuildFiles = [
     Asm("func_1a5e0", 0x1a5e0, "asm/nonmatching/func_1a5e0.s"),
     Asm("func_1a6e0", 0x1a6e0, "asm/nonmatching/func_1a6e0.s"),
     Asm("func_1a750", 0x1a750, "asm/nonmatching/func_1a750.s"),
-    Clang("1a7c8", 0x1a7c8, "src/1a7c8.c"),
+    Cpp("1a7c8", 0x1a7c8, "src/1a7c8.cpp"),
     Asm("func_1a7d8", 0x1a7d8, "asm/nonmatching/func_1a7d8.s"),
     Asm("func_1a850", 0x1a850, "asm/nonmatching/func_1a850.s"),
     Asm("func_1a8c8", 0x1a8c8, "asm/nonmatching/func_1a8c8.s"),
@@ -440,14 +484,14 @@ BuildFiles = [
     Asm("func_1b850", 0x1b850, "asm/nonmatching/func_1b850.s"),
     Asm("func_1ba08", 0x1ba08, "asm/nonmatching/func_1ba08.s"),
     Asm("func_1ba90", 0x1ba90, "asm/nonmatching/func_1ba90.s"),
-    Clang("1bc00", 0x1bc00, "src/1bc00.c"),
+    Cpp("1bc00", 0x1bc00, "src/1bc00.cpp"),
     Asm("func_1bc10", 0x1bc10, "asm/nonmatching/func_1bc10.s"),
     Asm("func_1bd18", 0x1bd18, "asm/nonmatching/func_1bd18.s"),
     Asm("func_1bdf8", 0x1bdf8, "asm/nonmatching/func_1bdf8.s"),
     Asm("func_1bed8", 0x1bed8, "asm/nonmatching/func_1bed8.s"),
     Asm("func_1bfb8", 0x1bfb8, "asm/nonmatching/func_1bfb8.s"),
-    Clang("1c070", 0x1c070, "src/1c070.c"),
-    Clang("1c080", 0x1c080, "src/1c080.c"),
+    Cpp("1c070", 0x1c070, "src/1c070.cpp"),
+    Cpp("1c080", 0x1c080, "src/1c080.cpp"),
     Asm("func_1c098", 0x1c098, "asm/nonmatching/func_1c098.s"),
     Asm("func_1c100", 0x1c100, "asm/nonmatching/func_1c100.s"),
     Asm("func_1c168", 0x1c168, "asm/nonmatching/func_1c168.s"),
@@ -476,13 +520,13 @@ BuildFiles = [
     Asm("func_1d818", 0x1d818, "asm/nonmatching/func_1d818.s"),
     Asm("func_1d990", 0x1d990, "asm/nonmatching/func_1d990.s"),
     Asm("func_1d9c8", 0x1d9c8, "asm/nonmatching/func_1d9c8.s"),
-    Clang("1d9e8", 0x1d9e8, "src/1d9e8.c"),
+    Cpp("1d9e8", 0x1d9e8, "src/1d9e8.cpp"),
     Asm("func_1d9f8", 0x1d9f8, "asm/nonmatching/func_1d9f8.s"),
     Asm("func_1da98", 0x1da98, "asm/nonmatching/func_1da98.s"),
     Asm("func_1dc30", 0x1dc30, "asm/nonmatching/func_1dc30.s"),
     Asm("func_1ddc8", 0x1ddc8, "asm/nonmatching/func_1ddc8.s"),
     Asm("func_1df60", 0x1df60, "asm/nonmatching/func_1df60.s"),
-    Clang("1e0f8", 0x1e0f8, "src/1e0f8.c"),
+    Cpp("1e0f8", 0x1e0f8, "src/1e0f8.cpp"),
     Asm("func_1e100", 0x1e100, "asm/nonmatching/func_1e100.s"),
     Asm("func_1f628", 0x1f628, "asm/nonmatching/func_1f628.s"),
     Asm("func_1f6d0", 0x1f6d0, "asm/nonmatching/func_1f6d0.s"),

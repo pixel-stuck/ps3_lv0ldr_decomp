@@ -3,26 +3,7 @@
 
 #include "types.h"
 
-struct obj_488;
-
-typedef struct {
-    /* 0x00 */ void* func0;
-    /* 0x04 */ void* func1;
-    /* 0x08 */ void* func2;
-    /* 0x0C */ void* func3;
-    /* 0x10 */ s32 (*func4)(struct obj_488*, long long);
-    /* 0x14 */ void (*func5)(struct obj_488*);
-    /* 0x18 */ void (*func6)(struct obj_488*);
-} obj_488_vtable_inner; // size = 0x1C
-
-typedef struct {
-    /* 0x00 */ char unk0[8];
-    obj_488_vtable_inner inner;
-} obj_488_vtable;
-
-typedef struct obj_488 {
-    /* 0x00 */ const obj_488_vtable_inner* vtable;
-} obj_488; // size = ??
+// struct obj_488;
 
 typedef struct unk_struct_2f9b0_sub {
     /* 0x00 */ char unk00[0xC];
@@ -67,7 +48,7 @@ typedef struct IfiHeader {
 
 typedef struct {
     /* 0x00 */ char unk00[0x10];
-    /* 0x10 */ unsigned long long unk10;
+    /* 0x10 */ u64 unk10;
     /* 0x18 */ char unk18[0x8];
 } unk_struct_1188_2; // size = 0x20
 
@@ -77,7 +58,7 @@ typedef struct unk_struct_1188_3_inner {
 } unk_struct_1188_3_inner; // size = 8
 
 typedef struct {
-    /* 0x00 */ void* unk00;
+    /* 0x00 */ void* vtable;
     /* 0x04 */ unk_struct_1188_3_inner unk04;
     /* 0x0C */ void* unk0C;
     /* 0x10 */ s32 unk10;
@@ -92,7 +73,12 @@ typedef struct {
 typedef struct struct_func_1ab0 {
     /* 0x00 */ s32 unk00;
     /* 0x04 */ s32 unk04;
-    /* 0x08 */ long long unk08;
+    /* 0x08 */ u64 unk08;
 } struct_func_1ab0;
+
+typedef struct struct_func_1c070 {
+    /* 0x00 */ char unk00[0xC];
+    /* 0x0C */ s32 unk0C;
+} struct_func_1c070;
 
 #endif
