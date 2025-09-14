@@ -22,7 +22,7 @@ void func_f590(obj1* arg0, s8 arg1, s32 arg2) {
     func_1df60(&data_25140, func_e0b8());
 }
 #else
-void __attribute__((naked)) func_f590(obj_488* arg0, s8 arg1, s32 arg2) {
+void __attribute__((naked)) func_f590(obj_510* arg0, s8 arg1, s32 arg2) {
     INCLUDE_ASM("asm/nonmatching", func_f590);
 }
 #endif

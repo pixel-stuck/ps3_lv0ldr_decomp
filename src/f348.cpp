@@ -16,7 +16,7 @@ u64 func_f348(obj_488* arg0) {
     }
 }
 #else
-u64 __attribute__((naked)) func_f348(obj_488* arg0) {
+u64 __attribute__((naked)) func_f348(obj_510* arg0) {
     INCLUDE_ASM("asm/nonmatching", func_f348);
 }
 #endif

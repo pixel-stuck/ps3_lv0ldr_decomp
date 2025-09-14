@@ -3,7 +3,7 @@
 
 extern const char data_24dd0[];
 
-s32 func_dc80(obj_488* arg0) {
+s32 func_dc80(obj_510* arg0) {
     s8 sp20;
     u8 temp;
     s32 res;

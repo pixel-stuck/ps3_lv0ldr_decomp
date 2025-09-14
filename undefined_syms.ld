@@ -1,3 +1,4 @@
+data_2f994 = 0x2f994;
 data_27a00 = 0x27a00;
 data_25600 = 0x25600;
 data_25800 = 0x25800;
@@ -246,3 +247,5 @@ data_31ec0 = 0x31ec0;
 data_22a98 = 0x22a98;
 data_22ab8 = 0x22ab8;
 data_24dd0 = 0x24dd0;
+
+_ZdlPv = __cxa_pure_virtual;

@@ -1,5 +1,6 @@
 from pathlib import Path
 import clang.cindex as index
+from ordered_set import OrderedSet
 
 class Subsegment:
     def __init__(self, name, address, src_path):
@@ -29,35 +30,35 @@ class Cpp(Subsegment):
     def __init__(self, name, address, src_path):
         super().__init__(name, address, src_path)
         self.build_rule = "cxx"
+        # self.rodata_order = rodata_order
         self.generate_linker_subsections()
 
     def generate_linker_subsections(self):
         tu = index.TranslationUnit.from_source(self.src_path, args=["-Iinclude", "-DFUNC_ORDER"])
-        func_names = self.get_function_names(tu.cursor)
-        self.linker_subsections[".text"] = func_names
-        # self.linker_subsections[".rodata"] = func_names
-        # self.linker_subsections[".data"] = func_names
+        # func_names = self.get_function_names(tu.cursor)
+        #
+        # self.linker_subsections[".text"] = func_names
 
     def get_function_names(self, cursor):
-        mangled = []
+        mangled = OrderedSet()
 
         for child in cursor.get_children():
             if(child.kind == index.CursorKind.CONSTRUCTOR and child.is_definition()):
-                mangled.append(child.mangled_name)
+                mangled.add(child.mangled_name)
 
             if(child.kind == index.CursorKind.FUNCTION_DECL and child.is_definition()):
-                mangled.append(child.mangled_name)
+                mangled.add(child.mangled_name)
 
             if(child.kind == index.CursorKind.CXX_METHOD and child.is_definition()):
-                mangled.append(child.mangled_name)
+                mangled.add(child.mangled_name)
 
-            if(child.kind == index.CursorKind.CLASS_DECL):
-                mangled = self.get_function_names(child)
+            if(child.kind == index.CursorKind.LINKAGE_SPEC):
+                mangled = mangled | self.get_function_names(child)
 
         return mangled
 
 class Bin(Subsegment):
-    def __init__(self, name, address, src_path):
+    def __init__(self, name, address, src_path, force_linker_section=None):
         super().__init__(name, address, src_path)
         self.build_rule = "databin"
         self.linker_sections = [".data"]
@@ -97,7 +98,9 @@ def generate_linker(linker_path):
 
 BuildFiles = [
     HandAsm("entrypoint", 0x400, "asm/400.s"),
-    Cpp("488", 0x488, "src/488.cpp"),
+    # Cpp("488", 0x488, "src/488.cpp", rodata_order=["str1.16", "cst16", "vtable"]),
+    Cpp("488", 0x488, "src/main.cpp"),
+    Cpp("510", 0x488, "src/obj_510.cpp"),
     # new TU ?
     Asm("func_1480", 0x1480, "asm/nonmatching/func_1480.s"),
     Asm("func_1560", 0x1560, "asm/nonmatching/func_1560.s"),
@@ -111,7 +114,7 @@ BuildFiles = [
     Asm("func_1b48", 0x1b48, "asm/nonmatching/func_1b48.s"),
     Asm("func_1b88", 0x1b88, "asm/nonmatching/func_1b88.s"),
     Asm("func_1c00", 0x1c00, "asm/nonmatching/func_1c00.s"),
-    Cpp("1e00", 0x1e00, "src/1e00.cpp"),
+    Cpp("obj_2f9b0", 0x1e00, "src/obj_2f9b0.cpp"),
     Asm("func_1e18", 0x1e18, "asm/nonmatching/func_1e18.s"),
     Asm("func_1f48", 0x1f48, "asm/nonmatching/func_1f48.s"),
     Asm("func_1fc8", 0x1fc8, "asm/nonmatching/func_1fc8.s"),
@@ -190,7 +193,8 @@ BuildFiles = [
     Cpp("4828", 0x4828, "src/4828.cpp"),
     Cpp("4838", 0x4838, "src/4838.cpp"),
     Asm("func_49f8", 0x49f8, "asm/nonmatching/func_49f8.s"),
-    Cpp("4a58", 0x4a58, "src/4a58.cpp"),
+    Asm("data_228d0", 0x228d0, "assets/asm/228d0.s"),
+    Cpp("4a58", 0x4a58, "src/obj_4670.cpp"),
     Asm("func_4ab0", 0x4ab0, "asm/nonmatching/func_4ab0.s"),
     Cpp("4c28", 0x4c28, "src/4c28.cpp"),
     Asm("func_4d98", 0x4d98, "asm/nonmatching/func_4d98.s"),
@@ -538,8 +542,10 @@ BuildFiles = [
     Asm("func_205b0", 0x205b0, "asm/nonmatching/func_205b0.s"),
     Asm("func_21148", 0x21148, "asm/nonmatching/func_21148.s"),
     Asm("func_21c00", 0x21c00, "asm/nonmatching/func_21c00.s"),
-    # Bin("data_226d0", 0x226d0, "assets/data/226d0.bin"), # became rodata for 488.c
-    Bin("data_228d0", 0x228d0, "assets/data/228d0.bin"),
+    # Bin("data_226d0", 0x226d0, "assets/data/226d0.bin"), # became rodata for 488.cpp
+
+    # Bin("data_22ad0", 0x22ad0, "assets/data/22ad0.bin"), # becomes rodata for obj_4670.cpp
+    Bin("data_22af0", 0x22af0, "assets/data/22af0.bin"),
     Bin("data_24d80", 0x24d80, "assets/data/24d80.bin"),
     Bin("data_25c30", 0x25c30, "assets/data/25c30.bin"),
     Bin("data_25f80", 0x25f80, "assets/data/25f80.bin"),

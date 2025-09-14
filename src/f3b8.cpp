@@ -15,7 +15,7 @@ unsigned char func_f3b8(void) {
     return res & 1;
 }
 #else
-s32 __attribute__((naked)) func_f3b8(obj_488*) {
+s32 __attribute__((naked)) func_f3b8(obj_510*) {
     INCLUDE_ASM("asm/nonmatching", func_f3b8);
 }
 #endif

@@ -30,7 +30,7 @@ GAME_GCC_CMD = f"{GAME_CC_DIR}/bin/gcc.exe -fno-unit-at-a-time -c -B {GAME_CC_DI
 
 GAME_COMPILE_CMD = f"{GAME_GCC_CMD} -o"
 
-GAME_GPP_CMD = f"{GAME_CC_DIR}/bin/g++.exe -fno-if-conversion2 -fno-unit-at-a-time -fno-inline -ffunction-sections -fdata-sections -c -B {GAME_CC_DIR}/bin -I {COMMON_INCLUDES} -Os $in"
+GAME_GPP_CMD = f"{GAME_CC_DIR}/bin/g++.exe -fno-unit-at-a-time -ffunction-sections -c -B {GAME_CC_DIR}/bin -I {COMMON_INCLUDES} -Os $in"
 
 GAME_COMPILE_CPP_CMD = f"{GAME_GPP_CMD} -o"
 
@@ -107,27 +107,6 @@ def build_stuff():
         description="bin $out",
         command=f"{cross}objcopy.exe $in $out -O binary",
     )
-
-    # for entry in linker_entries:
-    #     seg = entry.segment
-    #
-    #     if seg.type[0] == ".":
-    #         continue
-    #
-    #     if entry.object_path is None:
-    #         continue
-    #
-    #     if isinstance(seg, splat.segtypes.common.asm.CommonSegAsm) or isinstance(
-    #         seg, splat.segtypes.common.data.CommonSegData
-    #     ):
-    #         build(entry.object_path, entry.src_paths, "as")
-    #     elif isinstance(seg, splat.segtypes.common.c.CommonSegC):
-    #         build(entry.object_path, entry.src_paths, "cc")
-    #     elif isinstance(seg, splat.segtypes.common.databin.CommonSegDatabin):
-    #         build(entry.object_path, entry.src_paths, "as")
-    #     else:
-    #         print(f"ERROR: Unsupported build segment type {seg.type}")
-    #         sys.exit(1)
 
     for entry in config.BuildFiles:
         build(entry.object_path, entry.src_path, entry.build_rule)
