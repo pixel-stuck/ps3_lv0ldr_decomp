@@ -64,7 +64,7 @@ def build_stuff():
     # Rules
     cross = f"{GAME_CC_DIR}/bin/"
 
-    ld_args = f"-Map $mapfile -T $in -T undefined_syms.ld -o $out"
+    ld_args = f"--no-demangle -Map $mapfile -T $in -T undefined_syms.ld -o $out"
 
     ninja.rule(
         "as",

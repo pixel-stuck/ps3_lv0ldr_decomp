@@ -454,7 +454,7 @@ class ProjectSettings:
     disassemble_all: bool
     reg_categories: Dict[str, int]
     expected_dir: str
-
+    diff_section: str
 
 @dataclass
 class Compress:
@@ -526,6 +526,7 @@ def create_project_settings(settings: Dict[str, Any]) -> ProjectSettings:
         show_line_numbers_default=settings.get("show_line_numbers_default", True),
         disassemble_all=settings.get("disassemble_all", False),
         reg_categories=settings.get("reg_categories", {}),
+        diff_section=settings.get("diff_section", None),
     )
 
 
@@ -566,7 +567,7 @@ def create_config(args: argparse.Namespace, project: ProjectSettings) -> Config:
         make=args.make,
         source_old_binutils=args.source_old_binutils
         or "llvm-" in project.objdump_executable,
-        diff_section=args.diff_section,
+        diff_section=project.diff_section or args.diff_section,
         inlines=args.inlines,
         max_function_size_lines=args.max_lines,
         max_function_size_bytes=args.max_lines * 4,
@@ -1266,16 +1267,27 @@ def search_map_file(
             ram_to_rom = None
             cands = []
             last_line = ""
-            for line in lines:
-                if line.startswith(" " + config.diff_section):
-                    cur_objfile = line.split()[3]
+            for i, line in enumerate(lines):
+                if last_line.startswith(" " + config.diff_section):
+                    tokens = last_line.split() + line.split()
+                    if len(tokens) < 4:
+                        print(f"line number: {i}")
+                        print(tokens)
+                        continue
+                    cur_objfile = tokens[3]
+                    print(cur_objfile)
                 if "load address" in line:
                     tokens = last_line.split() + line.split()
                     ram = int(tokens[1], 0)
                     rom = int(tokens[5], 0)
                     ram_to_rom = rom - ram
-                if line.endswith(" " + fn_name) or f" {fn_name} = 0x" in line:
-                    ram = int(line.split()[0], 0)
+                if line.endswith(" " + fn_name) and not line.startswith(" " + fn_name) or f" {fn_name} = 0x" in line:
+                    print(f"line number: {i}")
+                    print(f"")
+                    line_split = line.split()
+                    # if len(line_split) < 2:
+                    #     continue
+                    ram = int(line_split[0], 0)
                     if (for_binary and ram_to_rom is not None) or (
                         not for_binary and cur_objfile is not None
                     ):
